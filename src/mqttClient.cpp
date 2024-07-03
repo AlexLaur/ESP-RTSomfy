@@ -117,7 +117,7 @@ void MQTTClient::notified(const char* action, const Remote& remote)
   char topic[50];
   if (strcmp(action, "remote-update") == 0 || strcmp(action, "remote-create") == 0)
   {
-    LOG_INFO("Remote create/update catched.");
+    LOG_DEBUG("Remote create/update catched.");
     sprintf(topic, "esprtsomfy/remotes/%lu/rolling_code", remote.id);
     pubSubClient.publish(topic, String(remote.rollingCode).c_str());
     sprintf(topic, "esprtsomfy/remotes/%lu/name", remote.id);
@@ -129,7 +129,7 @@ void MQTTClient::notified(const char* action, const Remote& remote)
       || strcmp(action, "remote-down") == 0 || strcmp(action, "remote-pair") == 0
       || strcmp(action, "remote-reset") == 0)
   {
-    LOG_INFO("Remote command catched.");
+    LOG_DEBUG("Remote command catched.");
     sprintf(topic, "esprtsomfy/remotes/%lu/last_action", remote.id);
     String command = String(action).substring(7);
     pubSubClient.publish(topic, command.c_str());

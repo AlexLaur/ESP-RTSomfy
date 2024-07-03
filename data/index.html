@@ -61,10 +61,6 @@
                     <i class="fas fa-cogs mr-3"></i>
                     Configuration
                 </a>
-                <a href="api.html" class="flex items-center text-white opacity-75 hover:opacity-100 py-2 pl-4 nav-item">
-                    <i class="fas fa-code mr-3"></i>
-                    API
-                </a>
             </nav>
 
         </header>
@@ -147,8 +143,7 @@
                         </div>
                         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                             <button type="button" @click="showModalRemoteActions = false; showModalBackdrop = false"
-                                :data-remote-id="selectedRemoteId"
-                                :data-remote-action="remoteAction"
+                                :data-remote-id="selectedRemoteId" :data-remote-action="remoteAction"
                                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                 x-text="modalConfirmBtnText" id="remote-setting-action-btn"></button>
                             <button type="button" @click="showModalRemoteActions = false; showModalBackdrop = false"
@@ -171,7 +166,8 @@
                                         <div class="grid gap-3 mb-3 md:grid-cols-1">
                                             <div>
                                                 <label for="remote-name"
-                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Remote name</label>
+                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Remote
+                                                    name</label>
                                                 <input type="text" id="remote-name"
                                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                     maxlength="15" required />
@@ -183,7 +179,8 @@
                         </div>
                         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                             <button type="button" @click="showModalNewRemote = false; showModalBackdrop = false"
-                                class="inline-flex w-full justify-center rounded-md bg-blue-200 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-200 sm:ml-3 sm:w-auto" id="new-remote-btn">Create</button>
+                                class="inline-flex w-full justify-center rounded-md bg-blue-200 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-200 sm:ml-3 sm:w-auto"
+                                id="new-remote-btn">Create</button>
                             <button type="button" @click="showModalNewRemote = false; showModalBackdrop = false"
                                 class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
                         </div>
@@ -200,7 +197,10 @@
                                 <p class="text-xl pb-3 flex-auto">
                                     <i class="fas fa-bars mr-3"></i> Blinds
                                 </p>
-                                <button class="flex-auto text-sm leading-none text-gray-600 py-3 px-5 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none add-remote" @click="showModalNewRemote = true; showModalBackdrop = true"><i class="fas fa-plus mr-3"></i> Add Remote</button>
+                                <button
+                                    class="flex-auto text-sm leading-none text-gray-600 py-3 px-5 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none add-remote"
+                                    @click="showModalNewRemote = true; showModalBackdrop = true"><i
+                                        class="fas fa-plus mr-3"></i> Add Remote</button>
                             </div>
                             <div class="bg-white">
                                 <div class="overflow-x-auto">
@@ -232,7 +232,9 @@
     <!-- AlpineJS -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Font Awesome -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js" integrity="sha512-u3fPA7V8qQmhBPNT5quvaXVa1mnnLSXUep5PS1qo5NRzHwG19aHmNJnj1Q8hpA/nBWZtZD4r4AX6YOt5ynLN2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"
+        integrity="sha512-u3fPA7V8qQmhBPNT5quvaXVa1mnnLSXUep5PS1qo5NRzHwG19aHmNJnj1Q8hpA/nBWZtZD4r4AX6YOt5ynLN2g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Custom Scripts -->
     <script src="static/js/esprtsomfy.js"></script>
 

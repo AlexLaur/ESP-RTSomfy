@@ -4,11 +4,14 @@ endpointRemotesFetch = () => baseUrl + "api/v1/remotes";
 endpointRemoteCreate = () => baseUrl + "api/v1/remotes";
 endpointRemoteUpdate = (remoteId) => baseUrl + `api/v1/remotes/${remoteId}`;
 endpointRemoteDelete = (remoteId) => baseUrl + `api/v1/remotes/${remoteId}`;
-endpointRemoteAction = (remoteId) =>  baseUrl + `api/v1/remotes/${remoteId}/action`;
+endpointRemoteAction = (remoteId) => baseUrl + `api/v1/remotes/${remoteId}/action`;
 
 endpointNetworksFetch = () => baseUrl + "api/v1/wifi/networks";
 endpointNetworkFetch = () => baseUrl + "api/v1/wifi/config";
 endpointNetworkUpdate = () => baseUrl + "api/v1/wifi/config";
+
+endpointMQTTConfigFetch = () => baseUrl + "api/v1/mqtt/config";
+endpointMQTTConfigUpdate = () => baseUrl + "api/v1/mqtt/config";
 
 endpointSystemRestart = () => baseUrl + "api/v1/system/restart";
 endpointSystemInfos = () => baseUrl + "api/v1/system/infos";
@@ -123,7 +126,7 @@ function initRemoteSettingsButton() {
     });
 }
 
-function initNewRemoteButton(){
+function initNewRemoteButton() {
     const button = document.getElementById("new-remote-btn");
     button.addEventListener('click', function (event) {
         onNewRemoteFormSubmited();
@@ -144,7 +147,7 @@ function onRemoteNameChanged(event) {
         event.target.innerHTML = newName;
         event.target.contentEditable = 'true';
 
-        let payload = {name: newName};
+        let payload = { name: newName };
 
         request(endpointRemoteUpdate(remoteId), "PATCH", payload); // TODO on fail
 
@@ -170,7 +173,7 @@ function onSettingButtonActionClicked(event) {
         let payload = { action: action };
         request(endpointRemoteAction(remoteId), "POST", payload); // TODO on fail
 
-        if (action === "reset"){
+        if (action === "reset") {
             remoteElements.forEach(element => {
                 element.dataset.remoteRollingCode = 0;
             });
@@ -182,9 +185,9 @@ function onNewRemoteFormSubmited() {
     const input = document.getElementById("remote-name");
     let remoteName = input.value;
 
-    let payload = {name: remoteName};
+    let payload = { name: remoteName };
 
-    request(endpointRemoteCreate(), "POST", payload, (data) =>{
+    request(endpointRemoteCreate(), "POST", payload, (data) => {
         remoteListEl = document.getElementById("blind-list");
         remoteListEl.innerHTML += `
         <div class="table-row remote-element" data-remote-id="${data.id}" data-remote-rolling-code="${data.rolling_code}" data-remote-name="${data.name}">
@@ -219,6 +222,18 @@ function onNewRemoteFormSubmited() {
 
 function loadNetworks() {
     getRequest(endpointNetworksFetch(), onNetworksFetched);
+}
+
+function loadMqttConfig() {
+    getRequest(endpointMQTTConfigFetch(), onMqttConfigFetched);
+}
+
+function onMqttConfigFetched(data) {
+    document.getElementById("mqtt-enabled").checked = data.enabled;
+    document.getElementById("mqtt-broker").value = data.broker;
+    document.getElementById("mqtt-port").value = data.port;
+    document.getElementById("mqtt-username").value = data.username;
+    document.getElementById("mqtt-password").value = data.password;
 }
 
 function onNetworksFetched(data) {
@@ -256,6 +271,20 @@ function onNetworkConfigFormSubmited(event) {
     request(endpointNetworkUpdate(), "POST", payload); // TODO on fail
 }
 
-function onRestartButtonClicked(event){
+function onMQTTConfigFormSubmited(event) {
+    event.preventDefault();
+
+    const enabled = document.getElementById("mqtt-enabled").checked;
+    const broker = document.getElementById("mqtt-broker").value;
+    const port = document.getElementById("mqtt-port").value;
+    const username = document.getElementById("mqtt-username").value;
+    const password = document.getElementById("mqtt-password").value;
+
+    let payload = { "enabled": enabled, "broker": broker, "port": port, "username": username, "password": password };
+
+    request(endpointMQTTConfigUpdate(), "POST", payload); // TODO on fail
+}
+
+function onRestartButtonClicked(event) {
     request(endpointSystemRestart(), "POST", {}); // TODO on fail
 }
