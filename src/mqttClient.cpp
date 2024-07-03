@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#include <regex>
 #include <Arduino.h>
 #include <DebugLog.h>
 #include <ESP8266WiFi.h>
@@ -61,8 +62,7 @@ bool MQTTClient::connect(const MQTTConfiguration& conf)
   {
     LOG_INFO("MQTT client started.");
 
-    pubSubClient.setCallback(MQTTClient::receive);
-
+    LOG_DEBUG("Publishing basic informations...");
     Result<SystemInfosExtended> resultInfos = this->m_controller->fetchSystemInfos();
     pubSubClient.publish("esprtsomfy/system/infos/version", resultInfos.data.version);
     pubSubClient.publish("esprtsomfy/system/infos/mac", resultInfos.data.macAddress.c_str());
@@ -83,7 +83,10 @@ bool MQTTClient::connect(const MQTTConfiguration& conf)
       pubSubClient.publish(topic, resultRemotes.data[i].name);
     }
 
-    pubSubClient.subscribe("inTopic");
+    LOG_DEBUG("Subscribing to topics...");
+    pubSubClient.setCallback(MQTTClient::receive);
+    pubSubClient.subscribe("esprtsomfy/remotes/+/set/name");
+    pubSubClient.subscribe("esprtsomfy/remotes/+/set/action");
   }
   else
   {
@@ -112,9 +115,9 @@ void MQTTClient::notified(const char* action, const Remote& remote)
     return;
   }
   char topic[50];
-  if (strcmp(action, "remote-update") == 0)
+  if (strcmp(action, "remote-update") == 0 || strcmp(action, "remote-create") == 0)
   {
-    LOG_INFO("Remote update catched.");
+    LOG_INFO("Remote create/update catched.");
     sprintf(topic, "esprtsomfy/remotes/%lu/rolling_code", remote.id);
     pubSubClient.publish(topic, String(remote.rollingCode).c_str());
     sprintf(topic, "esprtsomfy/remotes/%lu/name", remote.id);
@@ -127,41 +130,96 @@ void MQTTClient::notified(const char* action, const Remote& remote)
       || strcmp(action, "remote-reset") == 0)
   {
     LOG_INFO("Remote command catched.");
-    sprintf(topic, "esprtsomfy/remotes/%lu/last_command", remote.id);
-    pubSubClient.publish(topic, "foo"); // TODO
+    sprintf(topic, "esprtsomfy/remotes/%lu/last_action", remote.id);
+    String command = String(action).substring(7);
+    pubSubClient.publish(topic, command.c_str());
+    return;
   }
-  // else if (strcmp(action, "remote-delete") == 0){
-  //     LOG_INFO("Remote Delete command catched.");
-  //     Result result = this->m_controller->fetchAllRemotes();
-  //     pubSubClient.publish("esprtsomfy/remotes/list", result.data.c_str(), true);
-  // }
-  // else if (strcmp(action, "remote-create") == 0){
-  //     LOG_INFO("Remote Create command catched.");
-  //     Result result = this->m_controller->fetchAllRemotes();
-  //     pubSubClient.publish("esprtsomfy/remotes/list", result.data.c_str(), true);
-  // }
+
+  if (strcmp(action, "remote-delete") == 0)
+  {
+    sprintf(topic, "esprtsomfy/remotes/%lu/rolling_code", remote.id);
+    pubSubClient.publish(topic, "NA");
+    sprintf(topic, "esprtsomfy/remotes/%lu/name", remote.id);
+    pubSubClient.publish(topic, "NA");
+    sprintf(topic, "esprtsomfy/remotes/%lu/last_action", remote.id);
+    pubSubClient.publish(topic, "NA");
+  }
 }
 
 // PRIVATE
-void MQTTClient::receive(const char* topic, byte* payload, uint32_t length)
+
+/**
+ * @brief Called when a message arrived. TODO refacto this part. Some code is
+ * ugly, but this part was sooo boring.
+ *
+ * @param topic The topic
+ * @param payloadByte The payload received
+ * @param length Lenght of the payload
+ */
+void MQTTClient::receive(const char* topic, byte* payloadByte, uint32_t length)
 {
-  LOG_INFO("Message arrived on topic: ", topic);
+  LOG_DEBUG("Message arrived on topic: ", topic);
 
   MQTTClient* instance = MQTTClient::getInstance();
 
-  for (unsigned int i = 0; i < length; i++)
+  // Inspired by:
+  // https://github.com/me-no-dev/ESPAsyncWebServer/blob/7f3753454b1f176c4b6d6bcd1587a135d95ca63c/src/WebHandlerImpl.h#L94
+  std::regex remoteIdPattern(R"(/(\d+)/)");
+  std::smatch matches;
+  std::string s(topic);
+  if (!std::regex_search(s, matches, remoteIdPattern))
   {
-    LOG_INFO((char)payload[i]);
+    LOG_ERROR("Cannot extract remote ID.");
+    return;
   }
 
-  // // Switch on the LED if an 1 was received as first character
-  // if ((char)payload[0] == '1') {
-  //   digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
-  //   // but actually the LED is on; this is because
-  //   // it is active low on the ESP-01)
-  // } else {
-  //   digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
-  // }
+  // Assume that we only have one match. We should never trust users ?!
+  unsigned long remoteId = strtoul(matches[1].str().c_str(), nullptr, 10);
+
+  // Get payload from payloadByte
+  String payload = "";
+  for (unsigned int i = 0; i < length; i++)
+  {
+    payload += (char)payloadByte[i];
+  }
+
+  // Get endpoint
+  String endpoint = String(topic);
+  String lastElement;
+  int lastSlashPos = endpoint.lastIndexOf('/');
+  if (lastSlashPos != -1)
+  {
+    lastElement = endpoint.substring(lastSlashPos + 1);
+  }
+  else
+  {
+    LOG_ERROR("Something went wrong. The topic is ambigous.");
+    return;
+  }
+
+  if (lastElement == "action")
+  {
+    // Perform a command
+    Result<String> result = instance->m_controller->operateRemote(remoteId, payload.c_str());
+    if (!result.isSuccess)
+    {
+      LOG_ERROR(result.errorMsg);
+      return;
+    }
+    LOG_INFO(result.data);
+  }
+
+  else if (lastElement == "name")
+  {
+    // Change name
+    Result<Remote> result = instance->m_controller->updateRemote(remoteId, payload.c_str(), 0);
+    if (!result.isSuccess)
+    {
+      LOG_ERROR(result.errorMsg);
+      return;
+    }
+  }
 }
 
 String MQTTClient::getClientIdentifier()
