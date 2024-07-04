@@ -2,7 +2,7 @@
  * @file eepromDatabase.cpp
  * @author Laurette Alexandre
  * @brief Implementation of EEPROM database storage system.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -35,6 +35,13 @@
 #include <networks.h>
 #include <systemInfos.h>
 #include <eepromDatabase.h>
+
+EEPROMDatabase::EEPROMDatabase() { }
+
+EEPROMDatabase::EEPROMDatabase(unsigned long remoteBaseAddress)
+    : m_remoteBaseAddress(remoteBaseAddress)
+{
+}
 
 /**
  * @brief Initialise the Database in the EEPROM of the ESP
@@ -70,8 +77,9 @@ void EEPROMDatabase::fixIntegrity()
       continue;
     }
 
-    // An ID < REMOTE_BASE_ADDRESS OR ID > (REMOTE_BASE_ADDRESS + MAX_REMOTES) = Invalid
-    if (remoteRead.id < REMOTE_BASE_ADDRESS || remoteRead.id > (REMOTE_BASE_ADDRESS + MAX_REMOTES))
+    // An ID < this->m_remoteBaseAddress OR ID > (this->m_remoteBaseAddress + MAX_REMOTES) = Invalid
+    if (remoteRead.id < this->m_remoteBaseAddress
+        || remoteRead.id > (this->m_remoteBaseAddress + MAX_REMOTES))
     {
       if (remoteRead.id == 0)
       {
@@ -247,7 +255,7 @@ Remote EEPROMDatabase::createRemote(const char* name)
     LOG_ERROR("No space left. Cannot add a new remote.");
     return emptyRemote;
   }
-  emptyRemote.id = REMOTE_BASE_ADDRESS + index;
+  emptyRemote.id = this->m_remoteBaseAddress + index;
   emptyRemote.rollingCode = 0;
   strcpy(emptyRemote.name, name);
 
@@ -277,6 +285,43 @@ bool EEPROMDatabase::updateRemote(const Remote& remote)
   EEPROM.put(this->m_remotesAddressStart + index * sizeof(Remote), remote);
   EEPROM.commit();
   LOG_DEBUG("The remote has been updated.");
+  return true;
+}
+
+/**
+ * @brief Get the MQTT configuration
+ *
+ * @return MQTTConfiguration
+ */
+MQTTConfiguration EEPROMDatabase::getMQTTConfiguration()
+{
+  MQTTConfiguration mqttConfig;
+  EEPROM.get(this->m_mqttConfigAddressStart, mqttConfig);
+  if (!this->stringIsAscii(mqttConfig.broker))
+  {
+    LOG_ERROR("The mqttConfig seems to be corrupted. An empty config will be returned.");
+
+    strcpy(mqttConfig.broker, "");
+    strcpy(mqttConfig.password, "");
+    strcpy(mqttConfig.username, "");
+    mqttConfig.port = 0;
+  }
+  return mqttConfig;
+}
+
+/**
+ * @brief Update the MQTT cofiguration
+ *
+ * @param mqttConfig The new configuration to save
+ * @return true if the update was done
+ * @return false otherwise
+ */
+bool EEPROMDatabase::setMQTTConfiguration(const MQTTConfiguration& mqttConfig)
+{
+  LOG_DEBUG("Saving new MQTT configuration...");
+  EEPROM.put(this->m_mqttConfigAddressStart, mqttConfig);
+  EEPROM.commit();
+  LOG_INFO("MQTT configuration saved.");
   return true;
 }
 
@@ -333,5 +378,42 @@ bool EEPROMDatabase::migrate()
     return true;
   }
   // Apply migrations here.
+  if (strcmp(FIRMWARE_VERSION, "2.1.0") == 0)
+  {
+    this->applyUpdate_2_1_0();
+  }
+
+  // Then, save new version
+  EEPROM.put(this->m_lastSystemInfosAddressStart, FIRMWARE_VERSION);
+  EEPROM.commit();
+  LOG_INFO("Migration applied.");
   return true;
+}
+
+// Migrations
+
+/**
+ * @brief In this version, we introduce MQTT config between NetworkConfig and Remotes.
+ * We need to get all remotes, and moved to another address.
+ */
+void EEPROMDatabase::applyUpdate_2_1_0()
+{
+  LOG_INFO("Applying 2.1.0 patches...");
+  Remote remotes[MAX_REMOTES];
+  for (int i = 0; i < MAX_REMOTES; ++i)
+  {
+    Remote remote;
+    EEPROM.get(sizeof(SystemInfos) + sizeof(NetworkConfiguration) + i * sizeof(Remote), remote);
+    remotes[i] = remote;
+  }
+  // move remotes
+  for (int i = 0; i < MAX_REMOTES; ++i)
+  {
+    EEPROM.put(this->m_remotesAddressStart + i * sizeof(Remote), remotes[i]);
+  }
+  // Create empty config for MQTT
+  MQTTConfiguration mqttConfig = { false, "", DEFAULT_MQTT_PORT, "", "" };
+  EEPROM.put(this->m_mqttConfigAddressStart, mqttConfig);
+  EEPROM.commit();
+  LOG_INFO("2.1.0 patches applied.");
 }

@@ -2,7 +2,7 @@
  * @file wifiClient.h
  * @author Laurette Alexandre
  * @brief Header for wifi client.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -27,15 +27,21 @@
  */
 #pragma once
 
+#include <config.h>
 #include <networks.h>
 #include <networkClientAbs.h>
 
-class WifiClient : public NetworkClientAbstract
+class NetworkWifiClient : public NetworkClientAbstract
 {
   public:
   bool connect(const NetworkConfiguration& conf);
   bool connect(const char* ssid, const char* password);
   String getIP();
+  String getMacAddress();
   bool isConnected();
+  void scanNetworks();
   void getNetworks(Network networks[]);
+
+  private:
+  Network m_networks[MAX_NETWORK_SCAN];
 };

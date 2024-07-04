@@ -2,7 +2,7 @@
  * @file config.h
  * @author Laurette Alexandre
  * @brief Configuration for SOMFY Controller.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -27,12 +27,13 @@
  */
 #pragma once
 
-const char FIRMWARE_VERSION[] = "2.0.0";
+const char APP_NAME[] = "ESP-RTSomfy";
+const char FIRMWARE_VERSION[] = "2.1.0";
 
-const char AP_SSID[] = "SomfyController Fallback Hotspot";
+const char AP_SSID[] = "ESP-RTSomfy Fallback Hotspot";
 const char AP_PASSWORD[] = "5cKErSRCyQzy";
 
-const int SERVER_PORT = 80;
+const unsigned short SERVER_PORT = 80;
 
 const unsigned short MAX_NETWORK_SCAN = 15;
 
@@ -42,3 +43,5 @@ const unsigned short MAX_NETWORK_SCAN = 15;
 const unsigned short MAX_REMOTE_NAME_LENGTH = 17;  // 16 chars + 1 (\0)
 const unsigned short MAX_REMOTES = 16;
 const unsigned long REMOTE_BASE_ADDRESS = 0x100000;
+
+const unsigned short DEFAULT_MQTT_PORT = 1883;

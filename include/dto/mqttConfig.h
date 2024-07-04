@@ -1,7 +1,7 @@
 /**
- * @file systemInfo.h
+ * @file mqttConfig.h
  * @author Laurette Alexandre
- * @brief Header for System Info DTO.
+ * @brief Header for MQTT configuration DTO.
  * @version 2.1.0
  * @date 2024-06-06
  *
@@ -27,25 +27,13 @@
  */
 #pragma once
 
-#include <Arduino.h>
+#include <config.h>
 
-/**
- * @brief SystemInfos struct is stored in the database.
- *
- */
-struct SystemInfos
+struct MQTTConfiguration
 {
-  char version[8]; // Allow x.xx.xx
-};
-
-/**
- * @brief SystemInfosExtended is not stored in the database and hold other attributes
- * fetched from some adapters in the application.
- *
- */
-struct SystemInfosExtended
-{
-  char version[8]; // Allow x.xx.xx
-  String macAddress;
-  String ipAddress;
+  bool enabled = false;
+  char broker[65]; // allow 64 max length
+  unsigned short port = DEFAULT_MQTT_PORT; // default to DEFAULT_MQTT_PORT
+  char username[33]; // allow 32 chars max
+  char password[33];
 };

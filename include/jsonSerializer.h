@@ -2,7 +2,7 @@
  * @file jsonSerializer.h
  * @author Laurette Alexandre
  * @brief Header for JSON serialization.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -38,11 +38,14 @@
 class JSONSerializer : public SerializerAbstract
 {
   public:
+  String serializeMessage(const char* message);
   String serializeRemote(const Remote& remote);
   String serializeRemotes(const Remote remotes[], int size);
   String serializeNetworkConfig(const NetworkConfiguration& networkConfig);
   String serializeNetworks(const Network networks[], int size);
   String serializeSystemInfos(const SystemInfos& infos);
+  String serializeSystemInfos(const SystemInfosExtended& infos);
+  String serializeMQTTConfig(const MQTTConfiguration& mqttConfig);
 
   private:
   void serializeRemote(JsonObject object, const Remote& remote);

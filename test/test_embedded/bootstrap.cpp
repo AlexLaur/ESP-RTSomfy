@@ -14,11 +14,14 @@ void setUp(void)
 void tearDown(void)
 {
   // clean stuff up here
+  FakeSystemManager::requestRestartCalled = false;
+
   FakeDatabase::shouldFailDeleteRemote = false;
   FakeDatabase::shouldFailUpdateRemote = false;
   FakeDatabase::shouldReturnEmptyRemote = false;
   FakeDatabase::shouldFailCreateRemote = false;
   FakeDatabase::shouldFailUpdateNetworkConfiguration = false;
+  FakeDatabase::shouldFailUpdateMQTTConfiguration = false;
 
   FakeTransmitter::sendUPCommandCalled = false;
   FakeTransmitter::sendSTOPCommandCalled = false;

@@ -1,7 +1,7 @@
 /**
- * @file systemInfo.h
+ * @file mqttClient.h
  * @author Laurette Alexandre
- * @brief Header for System Info DTO.
+ * @brief Header for MQTT.
  * @version 2.1.0
  * @date 2024-06-06
  *
@@ -28,24 +28,32 @@
 #pragma once
 
 #include <Arduino.h>
+#include <PubSubClient.h>
 
-/**
- * @brief SystemInfos struct is stored in the database.
- *
- */
-struct SystemInfos
-{
-  char version[8]; // Allow x.xx.xx
-};
+#include <remote.h>
+#include <observer.h>
+#include <controller.h>
+#include <mqttConfig.h>
+#include <serializerAbs.h>
 
-/**
- * @brief SystemInfosExtended is not stored in the database and hold other attributes
- * fetched from some adapters in the application.
- *
- */
-struct SystemInfosExtended
+void callback(char* topic, byte* payload, unsigned int length);
+
+class MQTTClient : public Observer
 {
-  char version[8]; // Allow x.xx.xx
-  String macAddress;
-  String ipAddress;
+  public:
+  MQTTClient(Controller* controller, SerializerAbstract* serializer);
+  static MQTTClient* getInstance();
+  bool connect(const MQTTConfiguration& conf);
+  void handleMessages();
+  bool isConnected();
+
+  void notified(const char* action, const Remote& remote); // from observer
+
+  private:
+  static MQTTClient* m_instance;
+  Controller* m_controller = nullptr;
+  SerializerAbstract* m_serializer;
+
+  static void receive(const char* topic, byte* payload, uint32_t length);
+  String getClientIdentifier();
 };
