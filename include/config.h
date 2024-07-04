@@ -2,7 +2,7 @@
  * @file config.h
  * @author Laurette Alexandre
  * @brief Configuration for SOMFY Controller.
- * @version 2.1.0
+ * @version 2.1.1
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -28,7 +28,7 @@
 #pragma once
 
 const char APP_NAME[] = "ESP-RTSomfy";
-const char FIRMWARE_VERSION[] = "2.1.0";
+const char FIRMWARE_VERSION[] = "2.1.1";
 
 const char AP_SSID[] = "ESP-RTSomfy Fallback Hotspot";
 const char AP_PASSWORD[] = "5cKErSRCyQzy";

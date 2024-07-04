@@ -2,7 +2,7 @@
  * @file systemManager.cpp
  * @author Laurette Alexandre
  * @brief Implementation of System Management.
- * @version 2.1.0
+ * @version 2.1.1
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
