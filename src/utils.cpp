@@ -2,7 +2,7 @@
  * @file utils.cpp
  * @author Laurette Alexandre
  * @brief Implementation of somes utils fonction for the application.
- * @version 2.1.0
+ * @version 2.1.1
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
