@@ -1,7 +1,7 @@
 /**
- * @file systemInfo.h
+ * @file observer.cpp
  * @author Laurette Alexandre
- * @brief Header for System Info DTO.
+ * @brief Implementation for Observer pattern.
  * @version 2.1.0
  * @date 2024-06-06
  *
@@ -25,27 +25,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include <DebugLog.h>
 
-#include <Arduino.h>
+#include <observer.h>
 
-/**
- * @brief SystemInfos struct is stored in the database.
- *
- */
-struct SystemInfos
+void Subject::attach(Observer* observer)
 {
-  char version[8]; // Allow x.xx.xx
-};
+  short freeIndex = -1;
+  for (unsigned short i = 0; i < sizeof(this->m_observers) / sizeof(this->m_observers[0]); ++i)
+  {
+    if (this->m_observers[i] == nullptr)
+    {
+      freeIndex = i;
+      break;
+    }
+  }
 
-/**
- * @brief SystemInfosExtended is not stored in the database and hold other attributes
- * fetched from some adapters in the application.
- *
- */
-struct SystemInfosExtended
+  if (freeIndex == -1)
+  {
+    LOG_ERROR("Cannot add a new observer. No space left to store another observer.");
+    return;
+  }
+  this->m_observers[freeIndex] = observer;
+}
+
+void Subject::deattach(Observer* observer)
 {
-  char version[8]; // Allow x.xx.xx
-  String macAddress;
-  String ipAddress;
-};
+  for (unsigned short i = 0; i < sizeof(this->m_observers) / sizeof(this->m_observers[0]); ++i)
+  {
+    if (observer == this->m_observers[i])
+    {
+      this->m_observers[i] = nullptr;
+    }
+  }
+}
+
+void Subject::notify(const char* action, const Remote& remote)
+{
+  LOG_DEBUG("A message will be delivered to all observers.");
+  for (unsigned short i = 0; i < sizeof(this->m_observers) / sizeof(this->m_observers[0]); ++i)
+  {
+    if (this->m_observers[i] == nullptr)
+    {
+      continue;
+    }
+    this->m_observers[i]->notified(action, remote);
+  }
+}

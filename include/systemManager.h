@@ -1,7 +1,7 @@
 /**
- * @file systemInfo.h
+ * @file systemManager.h
  * @author Laurette Alexandre
- * @brief Header for System Info DTO.
+ * @brief Header of System Management.
  * @version 2.1.0
  * @date 2024-06-06
  *
@@ -27,25 +27,14 @@
  */
 #pragma once
 
-#include <Arduino.h>
+#include <systemManagerAbs.h>
 
-/**
- * @brief SystemInfos struct is stored in the database.
- *
- */
-struct SystemInfos
-{
-  char version[8]; // Allow x.xx.xx
-};
+class SystemManager : public SystemManagerAbstract {
+    public:
+    void handleActions();
+    void requestRestart();
 
-/**
- * @brief SystemInfosExtended is not stored in the database and hold other attributes
- * fetched from some adapters in the application.
- *
- */
-struct SystemInfosExtended
-{
-  char version[8]; // Allow x.xx.xx
-  String macAddress;
-  String ipAddress;
+    private:
+    bool m_restartRequested = false;
+    unsigned long m_lastHandled = 0;
 };

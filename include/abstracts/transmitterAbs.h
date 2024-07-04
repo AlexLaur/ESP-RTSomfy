@@ -2,7 +2,7 @@
  * @file transmitter.h
  * @author Laurette Alexandre
  * @brief Header of Transmitter abstraction.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre

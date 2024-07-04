@@ -2,7 +2,7 @@
  * @file result.h
  * @author Laurette Alexandre
  * @brief Header for Controller Result DTO.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -29,9 +29,10 @@
 
 #include <Arduino.h>
 
+template <typename T>
 struct Result
 {
-  String data = "";
-  String error = "";
+  T data;
+  String errorMsg = "";
   bool isSuccess = false;
 };

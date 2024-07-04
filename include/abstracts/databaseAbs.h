@@ -2,7 +2,7 @@
  * @file database.h
  * @author Laurette Alexandre
  * @brief Header of database abstraction.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -29,6 +29,7 @@
 
 #include <remote.h>
 #include <networks.h>
+#include <mqttConfig.h>
 #include <systemInfos.h>
 
 class DatabaseAbstract
@@ -49,6 +50,6 @@ class DatabaseAbstract
   virtual bool updateRemote(const Remote& remote) = 0;
   virtual bool deleteRemote(const unsigned long& id) = 0;
 
-  private:
-  virtual bool migrate() = 0;
+  virtual MQTTConfiguration getMQTTConfiguration() = 0;
+  virtual bool setMQTTConfiguration(const MQTTConfiguration& mqttConfig) = 0;
 };

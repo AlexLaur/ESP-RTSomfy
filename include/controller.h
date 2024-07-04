@@ -2,7 +2,7 @@
  * @file controller.h
  * @author Laurette Alexandre
  * @brief Header of the controller of the application.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -28,32 +28,38 @@
 #pragma once
 
 #include <result.h>
+#include <observer.h>
 #include <databaseAbs.h>
 #include <serializerAbs.h>
 #include <transmitterAbs.h>
+#include <systemManagerAbs.h>
 #include <networkClientAbs.h>
 
-class Controller
+class Controller : public Subject
 {
   public:
-  Controller(DatabaseAbstract* database, NetworkClientAbstract* networkClient, SerializerAbstract* serializer,
-      TransmitterAbstract* transmitter);
+  Controller(DatabaseAbstract* database, NetworkClientAbstract* networkClient, TransmitterAbstract* transmitter, SystemManagerAbstract* systemManager);
 
-  Result fetchSystemInfos();
+  Result<SystemInfosExtended> fetchSystemInfos();
+  Result<String> askSystemRestart();
 
-  Result fetchRemote(const unsigned long id);
-  Result fetchAllRemotes();
-  Result createRemote(const char* name);
-  Result deleteRemote(const unsigned long id);
-  Result updateRemote(const unsigned long id, const char* name, const unsigned int rollingCode);
-  Result operateRemote(const unsigned long id, const char* action);
+  Result<Remote> fetchRemote(const unsigned long id);
+  Result<Remote[MAX_REMOTES]> fetchAllRemotes();
+  Result<Remote> createRemote(const char* name);
+  Result<Remote> deleteRemote(const unsigned long id);
+  Result<Remote> updateRemote(const unsigned long id, const char* name, const unsigned int rollingCode);
+  Result<String> operateRemote(const unsigned long id, const char* action);
 
-  Result fetchNetworkConfiguration();
-  Result updateNetworkConfiguration(const char* ssid, const char* password);
+  Result<Network[MAX_NETWORK_SCAN]> fetchScannedNetworks();
+  Result<NetworkConfiguration> fetchNetworkConfiguration();
+  Result<NetworkConfiguration> updateNetworkConfiguration(const char* ssid, const char* password);
+
+  Result<MQTTConfiguration> fetchMQTTConfiguration();
+  Result<MQTTConfiguration> updateMQTTConfiguration(const bool& enabled, const char* broker, const unsigned short& port, const char* username, const char* password);
 
   private:
   DatabaseAbstract* m_database;
   NetworkClientAbstract* m_networkClient;
-  SerializerAbstract* m_serializer;
   TransmitterAbstract* m_transmitter;
+  SystemManagerAbstract* m_systemManager;
 };

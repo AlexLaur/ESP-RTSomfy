@@ -1,7 +1,7 @@
 /**
- * @file systemInfo.h
+ * @file utils.cpp
  * @author Laurette Alexandre
- * @brief Header for System Info DTO.
+ * @brief Implementation of somes utils fonction for the application.
  * @version 2.1.0
  * @date 2024-06-06
  *
@@ -25,27 +25,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
-
 #include <Arduino.h>
+#include <utils.h>
 
-/**
- * @brief SystemInfos struct is stored in the database.
- *
- */
-struct SystemInfos
+unsigned long macToLong(const char* macAddress)
 {
-  char version[8]; // Allow x.xx.xx
-};
+  unsigned long result = 0;
+  char* endPtr;
 
-/**
- * @brief SystemInfosExtended is not stored in the database and hold other attributes
- * fetched from some adapters in the application.
- *
- */
-struct SystemInfosExtended
-{
-  char version[8]; // Allow x.xx.xx
-  String macAddress;
-  String ipAddress;
-};
+  for (int i = 0; i < 6; ++i)
+  {
+    result <<= 8; // Offset 8 bits on the left
+    result |= strtol(macAddress + 3 * i, &endPtr, 16); // HEX convert
+  }
+
+  return result;
+}

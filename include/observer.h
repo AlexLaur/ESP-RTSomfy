@@ -1,7 +1,7 @@
 /**
- * @file systemInfo.h
+ * @file observer.h
  * @author Laurette Alexandre
- * @brief Header for System Info DTO.
+ * @brief Header for Observer pattern.
  * @version 2.1.0
  * @date 2024-06-06
  *
@@ -29,23 +29,21 @@
 
 #include <Arduino.h>
 
-/**
- * @brief SystemInfos struct is stored in the database.
- *
- */
-struct SystemInfos
+#include <remote.h>
+
+class Observer
 {
-  char version[8]; // Allow x.xx.xx
+  public:
+  virtual void notified(const char* action, const Remote& remote) = 0;
 };
 
-/**
- * @brief SystemInfosExtended is not stored in the database and hold other attributes
- * fetched from some adapters in the application.
- *
- */
-struct SystemInfosExtended
+class Subject
 {
-  char version[8]; // Allow x.xx.xx
-  String macAddress;
-  String ipAddress;
+  public:
+  void attach(Observer* observer);
+  void deattach(Observer* observer);
+  void notify(const char* action, const Remote& remote);
+
+  private:
+  Observer* m_observers[2] = { nullptr, nullptr }; // Allow only 2 observers (MQTT and WebServer)
 };

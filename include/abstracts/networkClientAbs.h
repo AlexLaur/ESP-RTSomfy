@@ -2,7 +2,7 @@
  * @file networkClient.h
  * @author Laurette Alexandre
  * @brief Header of networkClient abstraction.
- * @version 2.0.0
+ * @version 2.1.0
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
@@ -35,6 +35,8 @@ class NetworkClientAbstract
   virtual bool connect(const NetworkConfiguration& conf) = 0;
   virtual bool connect(const char* ssid, const char* password) = 0;
   virtual String getIP() = 0;
+  virtual String getMacAddress() = 0;
   virtual bool isConnected() = 0;
+  virtual void scanNetworks() = 0;
   virtual void getNetworks(Network networks[]) = 0;
 };

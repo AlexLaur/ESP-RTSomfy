@@ -28,10 +28,6 @@
                 <i class="fas fa-cogs mr-3"></i>
                 Configuration
             </a>
-            <a href="api.html" class="flex items-center text-white opacity-75 hover:opacity-100 py-2 pl-4 nav-item">
-                <i class="fas fa-code mr-3"></i>
-                API
-            </a>
         </nav>
     </aside>
 
@@ -49,17 +45,14 @@
 
             <!-- Dropdown Nav -->
             <nav :class="isOpen ? 'flex': 'hidden'" class="flex flex-col pt-4">
-                <a href="index.html" class="flex items-center text-white opacity-75 hover:opacity-100 py-2 pl-4 nav-item">
+                <a href="index.html"
+                    class="flex items-center text-white opacity-75 hover:opacity-100 py-2 pl-4 nav-item">
                     <i class="fas fa-tachometer-alt mr-3"></i>
                     Dashboard
                 </a>
                 <a href="configuration.html" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
                     <i class="fas fa-cogs mr-3"></i>
                     Configuration
-                </a>
-                <a href="api.html" class="flex items-center text-white opacity-75 hover:opacity-100 py-2 pl-4 nav-item">
-                    <i class="fas fa-code mr-3"></i>
-                    API
                 </a>
             </nav>
 
@@ -98,7 +91,7 @@
 
                         <div class="p-2">
                             <p class="text-xl pb-3 flex items-center">
-                                <i class="fas fa-cogs mr-3"></i> Configuration
+                                <i class="fas fa-cogs mr-3"></i> WiFi
                             </p>
                             <div class="bg-white p-3">
                                 <div class="overflow-x-auto">
@@ -108,14 +101,14 @@
                                                 <label for="wifi-ssid"
                                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">SSID</label>
                                                 <input type="text" id="wifi-ssid"
-                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                                     maxlength="32" required />
                                             </div>
                                             <div>
                                                 <label for="wifi-password"
                                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                                                 <input type="password" id="wifi-password"
-                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                                     placeholder="******" maxlength="63" />
                                             </div>
                                             <div>
@@ -130,12 +123,66 @@
 
                         <div class="p-2">
                             <p class="text-xl pb-3 flex items-center">
+                                <i class="fas fa-cogs mr-3"></i> MQTT
+                            </p>
+                            <div class="bg-white p-3">
+                                <div class="overflow-x-auto">
+                                    <form action="" method="POST" id="mqtt-config-form">
+                                        <div class="grid gap-3 mb-3 md:grid-cols-1">
+                                            <div>
+                                                <label for="mqtt-enabled"
+                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enabled</label>
+                                                <input type="checkbox" id="mqtt-enabled"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5" />
+                                            </div>
+                                            <div>
+                                                <label for="mqtt-broker"
+                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Broker</label>
+                                                <input type="text" id="mqtt-broker"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                                    maxlength="64" required />
+                                            </div>
+                                            <div>
+                                                <label for="mqtt-port"
+                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Port</label>
+                                                <input type="number" id="mqtt-port"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                                    placeholder="1883" required />
+                                            </div>
+                                            <div>
+                                                <label for="mqtt-username"
+                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                                                <input type="text" id="mqtt-username"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                                    maxlength="32" />
+                                            </div>
+                                            <div>
+                                                <label for="mqtt-password"
+                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                                                <input type="password" id="mqtt-password"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                                    maxlength="32" />
+                                            </div>
+                                            <div>
+                                                <button type="submit"
+                                                    class="text-sm leading-none text-gray-600 py-3 px-5 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none">Save</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="p-2">
+                            <p class="text-xl pb-3 flex items-center">
                                 <i class="fas fa-power-off mr-3"></i> Restart
                             </p>
                             <div class="bg-white p-3">
                                 <div class="overflow-x-auto">
                                     <button
-                                        class="text-sm leading-none text-gray-600 py-3 px-5 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none" id="restart-system-btn">Restart
+                                        class="text-sm leading-none text-gray-600 py-3 px-5 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none"
+                                        id="restart-system-btn">Restart
                                         System</button>
                                 </div>
                             </div>
@@ -150,7 +197,9 @@
     <!-- AlpineJS -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Font Awesome -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js" integrity="sha512-u3fPA7V8qQmhBPNT5quvaXVa1mnnLSXUep5PS1qo5NRzHwG19aHmNJnj1Q8hpA/nBWZtZD4r4AX6YOt5ynLN2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"
+        integrity="sha512-u3fPA7V8qQmhBPNT5quvaXVa1mnnLSXUep5PS1qo5NRzHwG19aHmNJnj1Q8hpA/nBWZtZD4r4AX6YOt5ynLN2g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Custom Scripts -->
     <script src="static/js/esprtsomfy.js"></script>
 
@@ -158,6 +207,8 @@
         document.addEventListener("DOMContentLoaded", function () {
             // Get all networks
             loadNetworks();
+            // Load MQTT config
+            loadMqttConfig();
             // Connect onSubmit for forms
             const networkConfigForm = document.getElementById("network-config-form");
             networkConfigForm.setAttribute("action", endpointNetworkUpdate);
@@ -165,6 +216,10 @@
 
             const restartButton = document.getElementById("restart-system-btn");
             restartButton.addEventListener("click", (e) => { onRestartButtonClicked(e) });
+
+            const MQTTConfigForm = document.getElementById("mqtt-config-form");
+            MQTTConfigForm.setAttribute("action", endpointMQTTConfigUpdate);
+            MQTTConfigForm.addEventListener("submit", (e) => { onMQTTConfigFormSubmited(e) });
         });
     </script>
 </body>
