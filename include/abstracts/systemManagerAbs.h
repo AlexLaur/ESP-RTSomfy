@@ -2,7 +2,7 @@
  * @file systemManagerAbs.h
  * @author Laurette Alexandre
  * @brief Header of System Management abstraction.
- * @version 2.1.0
+ * @version 2.1.1
  * @date 2024-06-06
  *
  * @copyright (c) 2024 Laurette Alexandre
